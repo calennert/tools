@@ -1,0 +1,70 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "ZZRvxHIREgT2wlB+3F9bpQW8jxU=",
+			"path": "github.com/alecthomas/kingpin",
+			"revision": "30de531dd802b2b402bf7dfd89515d6722a56a35",
+			"revisionTime": "2016-05-12T03:34:47Z"
+		},
+		{
+			"checksumSHA1": "KmjnydoAbofMieIWm+it5OWERaM=",
+			"path": "github.com/alecthomas/template",
+			"revision": "a0175ee3bccc567396460bf5acd36800cb10c49c",
+			"revisionTime": "2016-04-05T07:15:01Z"
+		},
+		{
+			"checksumSHA1": "3wt0pTXXeS+S93unwhGoLIyGX/Q=",
+			"path": "github.com/alecthomas/template/parse",
+			"revision": "a0175ee3bccc567396460bf5acd36800cb10c49c",
+			"revisionTime": "2016-04-05T07:15:01Z"
+		},
+		{
+			"checksumSHA1": "fCc3grA7vIxfBru7R3SqjcW+oLI=",
+			"path": "github.com/alecthomas/units",
+			"revision": "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a",
+			"revisionTime": "2015-10-22T06:55:26Z"
+		},
+		{
+			"checksumSHA1": "zmw+SDYXdMzFqYF9bXdAe9bQNQg=",
+			"path": "github.com/calennert/archive",
+			"revision": "c365ef247fcfbf226bb0a6ef29af1349524ad31f",
+			"revisionTime": "2016-05-12T16:17:01Z"
+		},
+		{
+			"checksumSHA1": "gkRIq2AsG0e/ngNfqW+IF/zr9o8=",
+			"path": "github.com/fatih/color",
+			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
+			"revisionTime": "2016-03-17T09:31:53Z"
+		},
+		{
+			"checksumSHA1": "rCffFCN6TpDAN3Jylyo8RFzhQ9E=",
+			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-colorable",
+			"path": "github.com/mattn/go-colorable",
+			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
+			"revisionTime": "2016-03-17T09:31:53Z"
+		},
+		{
+			"checksumSHA1": "NkbetqlpWBi3gP08JDneC+axTKw=",
+			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-isatty",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
+			"revisionTime": "2016-03-17T09:31:53Z"
+		},
+		{
+			"checksumSHA1": "oBKY8LJtCoSvmYA4ADFDY02A8NY=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03",
+			"revisionTime": "2016-05-16T12:31:02Z"
+		},
+		{
+			"checksumSHA1": "iGh9M1qmzHK9xZ/0CW7HDHBv09A=",
+			"origin": "github.com/calennert/archive/vendor/xi2.org/x/xz",
+			"path": "xi2.org/x/xz",
+			"revision": "c365ef247fcfbf226bb0a6ef29af1349524ad31f",
+			"revisionTime": "2016-05-12T16:17:01Z"
+		}
+	],
+	"rootPath": "github.com/calennert/tools/archive-uninstall"
+}
