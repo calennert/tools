@@ -21,13 +21,14 @@ usage: archive-uninstall [<flags>] <archive filename> <target directory>
 A tool to remove archive contents from a target directory.
 
 Flags:
-      --help       Show context-sensitive help (also try --help-long and --help-man).
-  -v, --verbose    Enable verbose mode.
-      --dry-run    Enable dry run mode. No files will be removed from target directory.
-      --verify     Only remove verified files.
-      --no-color   Disable color output in verbose mode.
-  -t, --type=TYPE  The archive type. Determined from archive filename, if not specified.
-      --version    Show application version.
+      --help         Show context-sensitive help (also try --help-long and --help-man).
+  -v, --verbose      Enable verbose mode.
+      --dry-run      Enable dry run mode. Nothing will be removed from target directory.
+      --remove-dirs  Enables removal of empty directories.
+      --verify       Only remove verified files.
+      --no-color     Disable color output in verbose mode.
+  -t, --type=TYPE    The archive type. Determined from archive filename, if not specified.
+      --version      Show application version.
 
 Args:
   <archive filename>  The filename of the archive that will be compared to the target directory.
