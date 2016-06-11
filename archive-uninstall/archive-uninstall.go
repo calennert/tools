@@ -8,7 +8,8 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
+	"sort"
 
 	"github.com/alecthomas/kingpin"
 	"github.com/calennert/archive"
@@ -26,13 +27,15 @@ const (
 	errTypeDetermination = "Unable to determine the file's archive type. Specify with the -type argument."
 	errUnrecognizedType  = "The type specified with the -type argument was not recognized."
 	errWalkError         = "An error occurred while walking the archive."
+	errDirRemovalError   = "An error occurred while attempting to remove a directory."
 )
 
 var (
 	/* CLI variables */
 	app             = kingpin.New("archive-uninstall", "A tool to remove archive contents from a target directory.")
 	verbose         = app.Flag("verbose", "Enable verbose mode.").Short('v').Bool()
-	dryRun          = app.Flag("dry-run", "Enable dry run mode. No files will be removed from target directory.").Bool()
+	dryRun          = app.Flag("dry-run", "Enable dry run mode. Nothing will be removed from target directory.").Bool()
+	removeDirs      = app.Flag("remove-dirs", "Enables removal of empty directories.").Bool()
 	verify          = app.Flag("verify", "Only remove verified files.").Bool()
 	noColor         = app.Flag("no-color", "Disable color output in verbose mode. ").Bool()
 	archiveTypeText = app.Flag("type", "The archive type. Determined from archive filename, if not specified.").HintOptions(".tar", ".tar.bz2", ".tar.gz", ".tar.xz", ".zip").Short('t').String()
@@ -44,7 +47,14 @@ var (
 
 	/* other variables */
 	archiveType archive.Type
+	directories []string
 )
+
+type reverseStringSlice []string
+
+func (p reverseStringSlice) Len() int           { return len(p) }
+func (p reverseStringSlice) Less(i, j int) bool { return p[j] < p[i] }
+func (p reverseStringSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 func init() {
 	green = color.New(color.FgGreen).SprintFunc()
@@ -76,22 +86,21 @@ func printCaption(value bool) string {
 	if *noColor {
 		if value {
 			return "Yes"
-		} else {
-			return "No"
 		}
-	} else {
-		if value {
-			return green("Yes")
-		} else {
-			return red("No")
-		}
+		return "No"
 	}
+
+	if value {
+		return green("Yes")
+	}
+
+	return red("No")
 }
 
 type verifyCallback func(file *os.File) (bool, error)
 
 func removeFromTargetDir(filename string, targetPath *os.File, verifyFunc verifyCallback) error {
-	path := path.Join(targetPath.Name(), filename)
+	path := filepath.Join(targetPath.Name(), filename)
 	file, _ := os.Open(path)
 
 	if *verbose {
@@ -135,6 +144,7 @@ func removeFromTargetDir(filename string, targetPath *os.File, verifyFunc verify
 
 func tarCallback(reader *tar.Reader, header *tar.Header) error {
 	if header.FileInfo().IsDir() {
+		addDirectory(header.Name)
 		return nil
 	}
 
@@ -162,6 +172,7 @@ func tarCallback(reader *tar.Reader, header *tar.Header) error {
 
 func zipCallback(file *zip.File) error {
 	if file.FileInfo().IsDir() {
+		addDirectory(file.Name)
 		return nil
 	}
 
@@ -192,6 +203,51 @@ func zipCallback(file *zip.File) error {
 	return removeFromTargetDir(file.Name, *targetDir, verifyFunc)
 }
 
+func addDirectory(dirName string) {
+	directories = append(directories, dirName)
+}
+
+func removeEmptyDirectories() {
+	dirs := reverseStringSlice(directories)
+	sort.Sort(dirs)
+
+	if *verbose {
+		fmt.Println("Removing empty directories...")
+	}
+
+	for _, d := range dirs {
+		path := filepath.Join((*targetDir).Name(), d)
+
+		count := 0
+		walkFunc := func(path string, info os.FileInfo, err error) error {
+			count++
+			return nil
+		}
+		if err := filepath.Walk(path, walkFunc); err != nil {
+			return
+		}
+
+		result := red("Not removed")
+		if count == 1 {
+			if !*dryRun {
+				if err := os.Remove(path); err != nil {
+					if !os.IsNotExist(err) {
+						app.FatalIfError(err, errDirRemovalError)
+					} else {
+						result = red("Directory does not exist")
+					}
+				} else {
+					result = green("Removed")
+				}
+			}
+		}
+
+		if *verbose {
+			fmt.Printf("%s: %s\n", path, result)
+		}
+	}
+}
+
 func main() {
 	var err error
 	archiveFilename := (*archiveFile).Name()
@@ -211,5 +267,9 @@ func main() {
 
 	if err != nil {
 		app.FatalIfError(err, errWalkError)
+	}
+
+	if *removeDirs {
+		removeEmptyDirectories()
 	}
 }
