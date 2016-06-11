@@ -27,30 +27,28 @@
 			"revisionTime": "2015-10-22T06:55:26Z"
 		},
 		{
-			"checksumSHA1": "zmw+SDYXdMzFqYF9bXdAe9bQNQg=",
+			"checksumSHA1": "s4isV4ffTsTC0Okc3Wm5xxXF3c0=",
 			"path": "github.com/calennert/archive",
-			"revision": "c365ef247fcfbf226bb0a6ef29af1349524ad31f",
-			"revisionTime": "2016-05-12T16:17:01Z"
+			"revision": "3cf843badefd423b031ece6a0deee1d4f91c3201",
+			"revisionTime": "2016-06-11T23:10:52Z"
 		},
 		{
 			"checksumSHA1": "gkRIq2AsG0e/ngNfqW+IF/zr9o8=",
 			"path": "github.com/fatih/color",
-			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
-			"revisionTime": "2016-03-17T09:31:53Z"
+			"revision": "87d4004f2ab62d0d255e0a38f1680aa534549fe3",
+			"revisionTime": "2016-06-10T11:06:02Z"
 		},
 		{
-			"checksumSHA1": "rCffFCN6TpDAN3Jylyo8RFzhQ9E=",
-			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-colorable",
+			"checksumSHA1": "6wAWOVRtaH7hX48hmw9o7noyy5Q=",
 			"path": "github.com/mattn/go-colorable",
-			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
-			"revisionTime": "2016-03-17T09:31:53Z"
+			"revision": "9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59",
+			"revisionTime": "2016-06-02T15:08:27Z"
 		},
 		{
 			"checksumSHA1": "NkbetqlpWBi3gP08JDneC+axTKw=",
-			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-isatty",
 			"path": "github.com/mattn/go-isatty",
-			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
-			"revisionTime": "2016-03-17T09:31:53Z"
+			"revision": "56b76bdf51f7708750eac80fa38b952bb9f32639",
+			"revisionTime": "2015-12-11T00:06:21Z"
 		},
 		{
 			"checksumSHA1": "oBKY8LJtCoSvmYA4ADFDY02A8NY=",
@@ -60,10 +58,9 @@
 		},
 		{
 			"checksumSHA1": "iGh9M1qmzHK9xZ/0CW7HDHBv09A=",
-			"origin": "github.com/calennert/archive/vendor/xi2.org/x/xz",
 			"path": "xi2.org/x/xz",
-			"revision": "c365ef247fcfbf226bb0a6ef29af1349524ad31f",
-			"revisionTime": "2016-05-12T16:17:01Z"
+			"revision": "19aeb13c4e7cb6bd3188dfede73840f33455425a",
+			"revisionTime": "2016-04-29T18:02:05Z"
 		}
 	],
 	"rootPath": "github.com/calennert/tools/archive-uninstall"

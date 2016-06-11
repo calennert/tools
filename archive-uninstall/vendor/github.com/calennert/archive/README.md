@@ -7,6 +7,7 @@ bzip2-compressed tar, and xz-compressed tar.
 ## Install
 
 ```bash
+go get xi2.org/x/xz
 go get github.com/calennert/archive
 ```
 
