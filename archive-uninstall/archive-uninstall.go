@@ -16,18 +16,31 @@ import (
 	"github.com/fatih/color"
 )
 
+type colorFunc func(a ...interface{}) string
+
+type reverseStringSlice []string
+
+func (p reverseStringSlice) Len() int           { return len(p) }
+func (p reverseStringSlice) Less(i, j int) bool { return p[j] < p[i] }
+func (p reverseStringSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+
+type verifyCallback func(file *os.File) (bool, error)
+
 const (
 	fmtFilename string = "File: %s\n"
+	fmtDirname  string = "Dir : %s\n"
 	fmtExists   string = "      Exists : %s\n"
+	fmtEmpty    string = "      Empty  : %s\n"
 	fmtRemoved  string = "      Removed: %s%s\n"
 
-	reasonVerificationFailure = " (file failed verification)"
-	reasonFileNotFound        = " (file not found in target directory)"
+	reasonVerificationFailure string = " (file failed verification)"
+	reasonFileNotFound        string = " (file not found in target directory)"
+	reasonDirNotFound         string = " (directory does not found)"
 
-	errTypeDetermination = "Unable to determine the file's archive type. Specify with the -type argument."
-	errUnrecognizedType  = "The type specified with the -type argument was not recognized."
-	errWalkError         = "An error occurred while walking the archive."
-	errDirRemovalError   = "An error occurred while attempting to remove a directory."
+	errTypeDetermination string = "Unable to determine the file's archive type. Specify with the -type argument."
+	errUnrecognizedType  string = "The type specified with the -type argument was not recognized."
+	errWalkError         string = "An error occurred while walking the archive."
+	errDirRemovalError   string = "An error occurred while attempting to remove a directory."
 )
 
 var (
@@ -42,24 +55,17 @@ var (
 	archiveFile     = app.Arg("archive filename", "The filename of the archive that will be compared to the target directory.").Required().File()
 	targetDir       = app.Arg("target directory", "The target directory from which to remove files.").Required().File()
 
-	/* color output functions */
-	green, red, cyan func(a ...interface{}) string
-
 	/* other variables */
 	archiveType archive.Type
 	directories []string
+	colorFuncs  map[string]colorFunc
 )
 
-type reverseStringSlice []string
-
-func (p reverseStringSlice) Len() int           { return len(p) }
-func (p reverseStringSlice) Less(i, j int) bool { return p[j] < p[i] }
-func (p reverseStringSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-
 func init() {
-	green = color.New(color.FgGreen).SprintFunc()
-	red = color.New(color.FgRed).SprintFunc()
-	cyan = color.New(color.FgCyan).SprintFunc()
+	colorFuncs = make(map[string]colorFunc)
+	colorFuncs["green"] = color.New(color.FgGreen).SprintFunc()
+	colorFuncs["red"] = color.New(color.FgRed).SprintFunc()
+	colorFuncs["cyan"] = color.New(color.FgCyan).SprintFunc()
 
 	app.Author("https://github.com/calennert")
 	app.Version("1.0")
@@ -82,14 +88,28 @@ func init() {
 	}
 }
 
-func printCaption(value bool) string {
+func cyan(value string) string {
 	if *noColor {
-		if value {
-			return "Yes"
-		}
-		return "No"
+		return value
 	}
+	return colorFuncs["cyan"](value)
+}
 
+func green(value string) string {
+	if *noColor {
+		return value
+	}
+	return colorFuncs["green"](value)
+}
+
+func red(value string) string {
+	if *noColor {
+		return value
+	}
+	return colorFuncs["red"](value)
+}
+
+func printCaption(value bool) string {
 	if value {
 		return green("Yes")
 	}
@@ -97,18 +117,12 @@ func printCaption(value bool) string {
 	return red("No")
 }
 
-type verifyCallback func(file *os.File) (bool, error)
-
 func removeFromTargetDir(filename string, targetPath *os.File, verifyFunc verifyCallback) error {
 	path := filepath.Join(targetPath.Name(), filename)
 	file, _ := os.Open(path)
 
 	if *verbose {
-		if *noColor {
-			fmt.Printf(fmtFilename, filename)
-		} else {
-			fmt.Printf(fmtFilename, cyan(filename))
-		}
+		fmt.Printf(fmtFilename, cyan(filename))
 		fmt.Printf(fmtExists, printCaption((file != nil)))
 	}
 
@@ -211,12 +225,12 @@ func removeEmptyDirectories() {
 	dirs := reverseStringSlice(directories)
 	sort.Sort(dirs)
 
-	if *verbose {
-		fmt.Println("Removing empty directories...")
-	}
-
 	for _, d := range dirs {
 		path := filepath.Join((*targetDir).Name(), d)
+
+		if *verbose {
+			fmt.Printf(fmtDirname, cyan(path))
+		}
 
 		count := 0
 		walkFunc := func(path string, info os.FileInfo, err error) error {
@@ -227,23 +241,30 @@ func removeEmptyDirectories() {
 			return
 		}
 
-		result := red("Not removed")
+		exists := true
+		empty := false
+		removed := false
+		reason := ""
 		if count == 1 {
+			empty = true
 			if !*dryRun {
 				if err := os.Remove(path); err != nil {
 					if !os.IsNotExist(err) {
 						app.FatalIfError(err, errDirRemovalError)
 					} else {
-						result = red("Directory does not exist")
+						exists = false
+						reason = reasonDirNotFound
 					}
 				} else {
-					result = green("Removed")
+					removed = true
 				}
 			}
 		}
 
 		if *verbose {
-			fmt.Printf("%s: %s\n", path, result)
+			fmt.Printf(fmtExists, printCaption(exists))
+			fmt.Printf(fmtEmpty, printCaption(empty))
+			fmt.Printf(fmtRemoved, printCaption(removed), reason)
 		}
 	}
 }
